@@ -1,0 +1,56 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          env: "monitoring"
+
+  # K3s Nodes - Assuming node-exporter is running on port 9100
+  # - job_name: 'k3s-nodes'
+    # static_configs:
+    #   - targets:
+    #       - '10.0.0.101:9100' # worker1
+    #     labels:
+    #       node_type: 'k3s'
+    #       role: 'worker'
+    #   - targets:
+    #       - '10.0.0.102:9100' # worker2
+    #     labels:
+    #       node_type: 'k3s'
+    #       role: 'worker'
+    #  
+  # K3s Nodes - Acceso a través de pfSense NAT
+  - job_name: 'k3s-nodes'
+    static_configs:
+      - targets:
+          - '192.168.1.2:9001'  # master (10.0.0.100)
+          - '192.168.1.2:9002'  # worker1 (10.0.0.101)
+          - '192.168.1.2:9003'  # worker2 (10.0.0.102)
+  # 
+  # 
+
+  # Proxmox - Assuming node-exporter is running on port 9100 (check your setup!)
+  - job_name: 'proxmox'
+    static_configs:
+      - targets:
+          - '192.168.1.250:9100' # Proxmox
+        labels:
+          node_type: 'hypervisor'
+
+  # Firewall - pfSense - Assuming node-exporter is running on port 9100 
+  # (check your setup!)
+  - job_name: 'pfsense'
+    static_configs:
+      - targets:
+          - '192.168.1.2:9900' # pfSense
+        labels:
+          node_type: 'firewall'
+
+  # Ejemplo para integrar nodos de tu cluster K3s o Proxmox (ajusta las IPs)
+  # - job_name: 'k3s-nodes'
+  #   static_configs:
+  #     - targets: ['<IP_DE_TU_NODO>:9100']
