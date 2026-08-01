@@ -1,8 +1,6 @@
-version: '3.8'
-
 networks:
   monitor:
-    external: true
+    name: monitor
 
 volumes:
   prometheus_data:
@@ -11,7 +9,7 @@ volumes:
 
 services:
   prometheus:
-    image: docker.io/prom/prometheus:latest
+    image: docker.io/prom/prometheus:v3.13.2
     container_name: monitoring-prometheus
     restart: unless-stopped
     ports:
@@ -27,7 +25,7 @@ services:
       - monitor
 
   loki:
-    image: docker.io/grafana/loki:latest
+    image: docker.io/grafana/loki:3.7.4
     container_name: monitoring-loki
     restart: unless-stopped
     ports:
@@ -40,7 +38,7 @@ services:
       - monitor
 
   grafana:
-    image: docker.io/grafana/grafana:latest
+    image: docker.io/grafana/grafana:13.1.1
     container_name: monitoring-grafana
     restart: unless-stopped
     ports:
@@ -50,5 +48,7 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:z
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:z
     networks:
       - monitor
